@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dota 2 Knowledge Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        h1 {
+            color: #00d9ff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .question-counter {
+            color: #888;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .question {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 217, 255, 0.5);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+        }
+
+        .option.correct {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+
+        .option.incorrect {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: #ff4444;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+
+        .feedback.incorrect {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            color: #ff6b6b;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            color: #fff;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn.show {
+            display: inline-block;
+        }
+
+        .results {
+            text-align: center;
+            display: none;
+        }
+
+        .results h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #00d9ff;
+        }
+
+        .score {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score.excellent {
+            color: #00ff88;
+        }
+
+        .score.good {
+            color: #00d9ff;
+        }
+
+        .score.average {
+            color: #ffcc00;
+        }
+
+        .score.poor {
+            color: #ff6b6b;
+        }
+
+        .score-message {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #00d9ff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dota 2 Knowledge Quiz</h1>
+            <p class="subtitle">Test what you've learned about Dota 2 and Hoodwink!</p>
+        </header>
+
+        <div class="quiz-container">
+            <div id="quiz">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+                <p class="question-counter" id="questionCounter">Question 1 of 10</p>
+                <span class="category-tag" id="category">General</span>
+                <h2 class="question" id="question">Loading...</h2>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+            </div>
+
+            <div class="results" id="results">
+                <h2>Quiz Complete!</h2>
+                <div class="score" id="finalScore">0%</div>
+                <p class="score-message" id="scoreMessage">Keep learning!</p>
+                <button class="btn show restart-btn" onclick="restartQuiz()">Try Again</button>
+                <br>
+                <a href="../README.md" class="back-link">← Back to Tutorial</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                category: "Game Basics",
+                question: "What is the main objective in Dota 2?",
+                options: [
+                    "Kill the most enemy heroes",
+                    "Destroy the enemy Ancient",
+                    "Collect the most gold",
+                    "Capture all towers"
+                ],
+                correct: 1,
+                explanation: "The goal of Dota 2 is to destroy the enemy team's Ancient, a large structure in their base."
+            },
+            {
+                category: "Game Basics",
+                question: "How many players are on each team in a standard Dota 2 match?",
+                options: ["3", "4", "5", "6"],
+                correct: 2,
+                explanation: "Dota 2 is a 5v5 game, with 5 players on each team."
+            },
+            {
+                category: "Map Knowledge",
+                question: "What are the two opposing teams called in Dota 2?",
+                options: [
+                    "Light and Dark",
+                    "Good and Evil",
+                    "Radiant and Dire",
+                    "Order and Chaos"
+                ],
+                correct: 2,
+                explanation: "The two teams are Radiant (bottom-left, nature-themed) and Dire (top-right, darker aesthetic)."
+            },
+            {
+                category: "Mechanics",
+                question: "What does 'last-hitting' mean in Dota 2?",
+                options: [
+                    "Being the last player alive",
+                    "Landing the killing blow on a creep to get gold",
+                    "The final hit that destroys the Ancient",
+                    "Hitting an enemy hero last in a team fight"
+                ],
+                correct: 1,
+                explanation: "Last-hitting is landing the killing blow on enemy creeps, which is the only way to get gold from them."
+            },
+            {
+                category: "Map Knowledge",
+                question: "How many lanes are there on the Dota 2 map?",
+                options: ["2", "3", "4", "5"],
+                correct: 1,
+                explanation: "There are 3 lanes: Top, Middle (Mid), and Bottom (Bot)."
+            },
+            {
+                category: "Hoodwink",
+                question: "What role does Hoodwink typically play?",
+                options: [
+                    "Position 1 - Hard Carry",
+                    "Position 2 - Mid",
+                    "Position 4 - Soft Support",
+                    "Position 5 - Hard Support"
+                ],
+                correct: 2,
+                explanation: "Hoodwink is typically played as a Position 4 (Soft Support), roaming to help secure kills."
+            },
+            {
+                category: "Hoodwink",
+                question: "What does Hoodwink's Bushwhack (W) ability require to work?",
+                options: [
+                    "River water nearby",
+                    "A tree nearby",
+                    "An ally nearby",
+                    "Full mana"
+                ],
+                correct: 1,
+                explanation: "Bushwhack only works when cast near a tree - it latches to the tree and stuns enemies in the area."
+            },
+            {
+                category: "Hoodwink",
+                question: "What does Hoodwink's Acorn Shot (Q) do when it hits the ground?",
+                options: [
+                    "Creates a pool of water",
+                    "Plants a tree",
+                    "Summons a squirrel",
+                    "Nothing special"
+                ],
+                correct: 1,
+                explanation: "When Acorn Shot hits the ground, it plants a tree first, then bounces to nearby enemies. This can be used to combo with Bushwhack!"
+            },
+            {
+                category: "Hoodwink",
+                question: "What does Hoodwink's Scurry (E) passive give her when near trees?",
+                options: [
+                    "Extra damage",
+                    "Mana regeneration",
+                    "Evasion chance",
+                    "Invisibility"
+                ],
+                correct: 2,
+                explanation: "Scurry's passive gives Hoodwink a chance to evade attacks when she's near trees."
+            },
+            {
+                category: "Mechanics",
+                question: "What happens when you destroy an enemy barracks?",
+                options: [
+                    "You win the game immediately",
+                    "Your creeps in that lane become stronger",
+                    "The enemy loses all their gold",
+                    "A new lane opens up"
+                ],
+                correct: 1,
+                explanation: "Destroying barracks makes your creeps in that lane stronger, giving your team a pushing advantage."
+            },
+            {
+                category: "Items",
+                question: "What is the primary benefit of buying a Magic Wand?",
+                options: [
+                    "Increases attack damage",
+                    "Provides burst healing and mana when activated",
+                    "Grants invisibility",
+                    "Increases movement speed"
+                ],
+                correct: 1,
+                explanation: "Magic Wand stores charges when nearby enemies use abilities, and can be activated for instant health and mana restoration."
+            },
+            {
+                category: "Roles",
+                question: "What is the main job of a Position 1 (Carry)?",
+                options: [
+                    "Support other heroes and buy wards",
+                    "Farm gold to become powerful late-game",
+                    "Roam and gank enemy heroes",
+                    "Tank damage for the team"
+                ],
+                correct: 1,
+                explanation: "The carry's job is to farm gold and items to become the team's main damage dealer in the late game."
+            },
+            {
+                category: "Strategy",
+                question: "When should you check the minimap?",
+                options: [
+                    "Only when you die",
+                    "Every few seconds",
+                    "Only during team fights",
+                    "Only at the start of the game"
+                ],
+                correct: 1,
+                explanation: "You should glance at the minimap every few seconds to track enemy positions and stay aware of potential ganks."
+            },
+            {
+                category: "Hoodwink",
+                question: "What is the best way to land Hoodwink's Bushwhack reliably?",
+                options: [
+                    "Cast it in the river",
+                    "Use Acorn Shot to create a tree, then immediately Bushwhack it",
+                    "Wait for enemies to stand still",
+                    "Only use it when your ultimate is ready"
+                ],
+                correct: 1,
+                explanation: "The Q-W combo (Acorn Shot to plant a tree, then Bushwhack) guarantees you have a tree exactly where you need it."
+            },
+            {
+                category: "Strategy",
+                question: "What should you do if multiple enemies are missing from the map?",
+                options: [
+                    "Push aggressively",
+                    "Play safe and stay near your tower",
+                    "Go to the jungle alone",
+                    "Ignore it and keep farming"
+                ],
+                correct: 1,
+                explanation: "Multiple missing enemies usually means danger - play safe near your tower until you know where they are."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedQuestions = [];
+        let answered = false;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function initQuiz() {
+            selectedQuestions = shuffleArray(questions).slice(0, 10);
+            currentQuestion = 0;
+            score = 0;
+            answered = false;
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = selectedQuestions[currentQuestion];
+
+            document.getElementById('progress').style.width = `${(currentQuestion / selectedQuestions.length) * 100}%`;
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestion + 1} of ${selectedQuestions.length}`;
+            document.getElementById('category').textContent = q.category;
+            document.getElementById('question').textContent = q.question;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.onclick = () => selectOption(index);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('nextBtn').classList.remove('show');
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+            answered = true;
+
+            const q = selectedQuestions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+
+            options.forEach((opt, i) => {
+                opt.classList.add('disabled');
+                if (i === q.correct) {
+                    opt.classList.add('correct');
+                } else if (i === index) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (index === q.correct) {
+                score++;
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `<strong>Correct!</strong> ${q.explanation}`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `<strong>Not quite.</strong> ${q.explanation}`;
+            }
+
+            feedback.style.display = 'block';
+            document.getElementById('nextBtn').classList.add('show');
+            document.getElementById('nextBtn').textContent =
+                currentQuestion === selectedQuestions.length - 1 ? 'See Results' : 'Next Question';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+
+            if (currentQuestion >= selectedQuestions.length) {
+                showResults();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+
+            const percentage = Math.round((score / selectedQuestions.length) * 100);
+            const scoreElement = document.getElementById('finalScore');
+            const messageElement = document.getElementById('scoreMessage');
+
+            scoreElement.textContent = `${percentage}%`;
+            scoreElement.className = 'score';
+
+            if (percentage >= 90) {
+                scoreElement.classList.add('excellent');
+                messageElement.textContent = `Excellent! You scored ${score}/${selectedQuestions.length}. You're ready for the battlefield!`;
+            } else if (percentage >= 70) {
+                scoreElement.classList.add('good');
+                messageElement.textContent = `Good job! You scored ${score}/${selectedQuestions.length}. Review the guides for the topics you missed.`;
+            } else if (percentage >= 50) {
+                scoreElement.classList.add('average');
+                messageElement.textContent = `Not bad! You scored ${score}/${selectedQuestions.length}. Keep studying the tutorial!`;
+            } else {
+                scoreElement.classList.add('poor');
+                messageElement.textContent = `You scored ${score}/${selectedQuestions.length}. Don't worry - read through the guides and try again!`;
+            }
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        // Start the quiz when the page loads
+        initQuiz();
+    </script>
+</body>
+</html>
