@@ -14,6 +14,8 @@ This tutorial is designed for complete beginners who have never played Dota 2 or
 4. [Hoodwink Guide](04-hoodwink-guide.md) - Master this playful squirrel hero
 5. [Tips and Tricks](05-tips-and-tricks.md) - General advice for new players
 6. [Practice Structure](06-practice-structure.md) - How to actually get better
+7. [Tracking Progress](07-tracking-progress.md) - APIs and tools to monitor improvement
+8. [Support Climbing Guide](08-support-climbing-guide.md) - Coaching for pos 4/5 players
 
 ## Test Your Knowledge
 
