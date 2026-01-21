@@ -13,6 +13,7 @@ This tutorial is designed for complete beginners who have never played Dota 2 or
 3. [Your First Game](03-your-first-game.md) - Step-by-step guide to playing your first match
 4. [Hoodwink Guide](04-hoodwink-guide.md) - Master this playful squirrel hero
 5. [Tips and Tricks](05-tips-and-tricks.md) - General advice for new players
+6. [Practice Structure](06-practice-structure.md) - How to actually get better
 
 ## Test Your Knowledge
 
